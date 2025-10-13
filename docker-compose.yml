@@ -1,0 +1,18 @@
+version: "3.9"
+
+networks:
+  proxy:
+    external: true
+
+services:
+  app:  
+    image: ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}/${IMAGE_NAME}:${IMAGE_TAG}
+    container_name: ${IMAGE_NAME}
+    environment:
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_REGION=us-east-1
+    expose:
+      - "8501"
+    restart: unless-stopped
+    networks:
+      - proxy

@@ -1,0 +1,34 @@
+pool:
+  name: Azure Pipelines
+  vmImage: 'ubuntu-latest'
+
+trigger:
+  branches:
+    include:
+      - master
+      - develop
+      - feature/*
+      - hotfix/*
+      - release/*
+      - release
+pr:
+ branches:
+    include:
+      - master
+      - develop
+
+resources:
+  repositories:
+    - repository: API_Pipelines
+      name: "API Pipelines/API Pipelines"
+      type: git
+      ref: refs/heads/feature/AI-804
+
+stages:
+- stage: Docker_Pipeline
+  displayName: Docker Pipeline
+  #condition: or(eq(variables['Build.Reason'], 'Manual'), startsWith(variables['Build.SourceBranch'], 'refs/heads/hotfix/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), and(eq(variables['Build.Reason'], 'PullRequest'), or(eq(variables['System.PullRequest.TargetBranchName'], 'develop'), eq(variables['System.PullRequest.TargetBranchName'], 'master'))))
+  variables:
+    - group: pipeline-vars
+  jobs:
+  - template: templates/PipelineDocker.yaml@API_Pipelines

@@ -1,0 +1,8 @@
+chatbot_streamlit_lambda/lambda_ticket_package/
+chatbot_streamlit_lambda/utils/__pycache__/
+chatbot_streamlit_lambda/app/__pycache__/
+chatbot_streamlit_lambda/backend/__pycache__/
+chatbot_streamlit_lambda/core/__pycache__/
+chatbot_streamlit_lambda/data/__pycache__/
+chatbot_streamlit_lambda/services/__pycache__/
+chatbot_streamlit_lambda/python/

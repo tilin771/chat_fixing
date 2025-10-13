@@ -1,0 +1,25 @@
+version: 0.0
+os: linux
+
+files:
+  - source: /
+    destination: /usr/local/docker/Quadis.AI/chatbot_streamlit_lambda
+    overwrite: true
+
+permissions:
+  - object: /usr/local/docker/Quadis.AI/chatbot_streamlit_lambda/scripts
+    pattern: "*.sh"
+    mode: 755
+    type:
+      - file
+
+hooks:
+  ApplicationStop:
+    - location: scripts/stop.sh
+      timeout: 180
+      runas: root
+
+  ApplicationStart:
+    - location: scripts/start.sh
+      timeout: 600
+      runas: root
