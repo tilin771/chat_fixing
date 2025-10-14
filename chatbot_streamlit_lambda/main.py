@@ -6,14 +6,10 @@ import uuid
 
 
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
-
-print("🔍 Archivo actual:", __file__)
-print("📂 Directorio actual:", os.getcwd())
-print("📦 sys.path:")
-for p in sys.path:
-    print("   ", p)
+import sys, os
+# Agrega la carpeta raíz (un nivel arriba de main.py si hace falta)
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
+print("✅ sys.path modificado:", sys.path)
 
 
 from core.supervisor_agent import run_supervisor
