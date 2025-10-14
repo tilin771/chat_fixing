@@ -15,7 +15,6 @@ RUN chown -R appuser:appuser /app
  
 USER appuser
 
-ENV PYTHONPATH=/app
 
 EXPOSE 8501
  
