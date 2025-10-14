@@ -5,13 +5,6 @@ import json
 import uuid
 
 
-
-import sys, os
-# Agrega la carpeta raíz (un nivel arriba de main.py si hace falta)
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
-print("✅ sys.path modificado:", sys.path)
-
-
 from core.supervisor_agent import run_supervisor
 from core.ticketing_agente import run_ticketing
 from services.query_kb import consultar_kb_streaming
