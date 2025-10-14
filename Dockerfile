@@ -14,7 +14,9 @@ COPY . /app
 RUN chown -R appuser:appuser /app
  
 USER appuser
- 
+
+ENV PYTHONPATH=/app
+
 EXPOSE 8501
  
 CMD ["streamlit", "run", "main.py", "--server.address=0.0.0.0", "--server.port=8501", "--server.enableCORS=false"]
