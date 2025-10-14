@@ -1,26 +1,20 @@
 FROM python:3.13-alpine
-
-# Crear usuario sin privilegios
+ 
+# Create and switch to non-root user
 RUN adduser -D appuser
-
+ 
 WORKDIR /app
-
-# Copiar requirements desde la subcarpeta
-COPY chatbot_streamlit_lambda/requirements.txt .
-
-# Instalar dependencias
+ 
+# Install dependencies
+COPY chatbot_streamlit_lambda/ /app
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Copiar todo el proyecto
-COPY chatbot_streamlit_lambda/ /app/
-
-# Establecer permisos
+ 
+# Copy application code and set ownership
+COPY . /app
 RUN chown -R appuser:appuser /app
+ 
 USER appuser
-
-# Asegurar que Python encuentre los módulos
-ENV PYTHONPATH=/app
-
+ 
 EXPOSE 8501
-
+ 
 CMD ["streamlit", "run", "main.py", "--server.address=0.0.0.0", "--server.port=8501", "--server.enableCORS=false"]
