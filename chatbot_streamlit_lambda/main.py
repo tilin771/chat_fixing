@@ -4,7 +4,18 @@ import streamlit as st
 import json
 import uuid
 
+
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+
+print("🔍 Archivo actual:", __file__)
+print("📂 Directorio actual:", os.getcwd())
+print("📦 sys.path:")
+for p in sys.path:
+    print("   ", p)
+
+
 from core.supervisor_agent import run_supervisor
 from core.ticketing_agente import run_ticketing
 from services.query_kb import consultar_kb_streaming
