@@ -17,23 +17,39 @@ st.title("🤖 Chatbot soporte Autoline con IA")
 # Funciones auxiliares
 # ----------------------
 
-def handle_robot(decision):
+def handle_robot(user_input_or_decision):
     """
-    Procesa una acción 'invoke_robot' devuelta por el supervisor.
-    Extrae el código de usuario y el tipo de tarea del robot, 
-    y ejecuta la acción correspondiente.
+    Procesa la ejecución del robot.
+    - Primera vez: extrae userCode y robotTask desde decision y construye el prompt inicial.
+    - Siguientes veces: envía directamente el mensaje del usuario al robot.
     """
-    user_code = decision.get("userCode", "")
-    robot_task = decision.get("robotTask", {})
-    task_type = robot_task.get("type", "")
-
-
-    if not user_code or not task_type:
-        show_answer("No se pudo identificar el código de usuario o el tipo de tarea del robot.")
-        return
-
-    prompt = f"Quiero ejecutar la acción '{task_type}', mi código de usuario es {user_code}"
     session_id = st.session_state["session_id"]
+
+    # Primera vez: inicializamos los datos del robot
+    if "robot_inicializado" not in st.session_state:
+        st.session_state["robot_inicializado"] = True
+
+        decision = user_input_or_decision  
+        user_code = decision.get("userCode", "")
+        robot_task = decision.get("robotTask", {})
+        task_type = robot_task.get("type", "")
+
+        if not user_code or not task_type:
+            show_answer("No se pudo identificar el código de usuario o el tipo de tarea del robot.")
+            return
+
+        st.session_state["robot_user_code"] = user_code
+        st.session_state["robot_task_type"] = task_type
+
+        # Prompt inicial especial
+        prompt = f"Quiero ejecutar la acción '{task_type}', mi código de usuario es {user_code}"
+
+    else:
+        # Mensajes posteriores: prompt normal con lo que envíe el usuario
+        user_code = st.session_state["robot_user_code"]
+        task_type = st.session_state["robot_task_type"]
+        prompt = user_input_or_decision
+
     # Ejecutar el robot
     with st.chat_message("assistant"):
         response_placeholder = st.empty()
@@ -48,6 +64,13 @@ def handle_robot(decision):
                 return
 
     st.session_state["messages"].append({"role": "assistant", "content": full_response})
+
+    if "El robot ha sido ejecutado" in full_response:
+        st.session_state["modo_robot"] = False
+        st.session_state.pop("robot_inicializado", None)
+        st.session_state.pop("robot_user_code", None)
+        st.session_state.pop("robot_task_type", None)
+
 
 
 def generar_contexto_kb(max_ultimos=5):
@@ -201,7 +224,7 @@ def manejar_accion(decision, user_input):
 
 
 
-def procesar_mensaje(user_input):
+def send_message(user_input):
     """Procesa el input del usuario"""
     session_id = st.session_state["session_id"]
 
@@ -220,6 +243,10 @@ def procesar_mensaje(user_input):
     # Si estamos en modo ticket
     if st.session_state["modo_ticket"]:
         handle_ticket(user_input)
+        return
+    
+    if st.session_state["modo_robot"]:
+        handle_robot(user_input)
         return
 
     # Caso general: pedir decisión al supervisor
@@ -248,4 +275,4 @@ for message in st.session_state["messages"]:
 # Input del usuario
 user_input = st.chat_input("Escribe tu consulta...")
 if user_input:
-    procesar_mensaje(user_input)
+    send_message(user_input)
