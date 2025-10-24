@@ -6,6 +6,7 @@ import uuid
 
 
 from core.supervisor_agent import run_supervisor
+from core.robot_agent import run_robot
 from core.ticketing_agente import run_ticketing
 from services.query_kb import consultar_kb_streaming
 from app.utils.validators import validate_message
