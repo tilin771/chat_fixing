@@ -17,10 +17,6 @@ st.title("🤖 Chatbot soporte Autoline con IA")
 # Funciones auxiliares
 # ----------------------
 
-from core.robot_agent import run_robot  # Asegúrate de tener esta importación
-
-from core.robot_agent import run_robot  # Asegúrate de tener esta importación
-
 def handle_robot(decision):
     """
     Procesa una acción 'invoke_robot' devuelta por el supervisor.
