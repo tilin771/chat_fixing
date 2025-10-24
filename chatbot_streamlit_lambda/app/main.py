@@ -4,8 +4,7 @@ import streamlit as st
 import json
 import uuid
 
-# Añadir carpeta raíz del proyecto al path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from core.supervisor_agent import run_supervisor
 from core.ticketing_agente import run_ticketing
 from services.query_kb import consultar_kb_streaming

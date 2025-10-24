@@ -16,6 +16,5 @@ def run_supervisor(prompt, session_id):
             data = event['chunk']['bytes']
             text_piece = data.decode('utf-8')
             final_response += text_piece
-    print(final_response)
     return final_response
 
