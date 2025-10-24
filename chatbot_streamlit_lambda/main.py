@@ -75,7 +75,7 @@ def handle_robot(user_input_or_decision):
         st.session_state.pop("robot_task_type", None)
 
 
-def generar_contexto_kb(max_ultimos=5):
+def generate_context_kb(max_ultimos=5):
     """
     Genera un contexto acumulado de los últimos mensajes de usuario
     y asistente para mejorar las consultas a la KB.
@@ -88,7 +88,7 @@ def generar_contexto_kb(max_ultimos=5):
     return contexto
 
 
-def inicializar_sesion():
+def initialize_session():
     """Inicializa las variables de sesión de Streamlit"""
     if "messages" not in st.session_state:
         st.session_state["messages"] = []
@@ -111,7 +111,7 @@ def show_answer(texto):
     st.session_state["messages"].append({"role": "assistant", "content": texto})
 
 
-def enviar_saludo_inicial():
+def send_initial_greeting():
     """Envía un saludo automático la primera vez que se inicia la sesión"""
     if "ia_inicializada" not in st.session_state:
         st.session_state["ia_inicializada"] = True
@@ -175,12 +175,12 @@ def handle_ticket(user_input):
         st.session_state["messages"].append({"role": "assistant", "content": full_response})
         st.rerun()        
 
-def manejar_accion(decision, user_input):
+def handle_action(decision, user_input):
     """Procesa la acción devuelta por el supervisor"""
     accion = decision.get("action", "")
 
     if accion == "query_kb":
-        contexto = generar_contexto_kb(max_ultimos=5)  
+        contexto = generate_context_kb(max_ultimos=5)  
         consulta_con_contexto = f"{contexto}\nPregunta del usuario: {user_input}"
         full_response = ""
         
@@ -259,15 +259,15 @@ def send_message(user_input):
         st.error("Error al procesar la respuesta de la IA")
         decision = {}
 
-    manejar_accion(decision, user_input)
+    handle_action(decision, user_input)
 
 
 # ----------------------
 # Código principal
 # ----------------------
 
-inicializar_sesion()
-enviar_saludo_inicial()
+initialize_session()
+send_initial_greeting()
 
 # Mostrar mensajes previos
 for message in st.session_state["messages"]:
