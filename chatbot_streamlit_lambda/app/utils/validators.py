@@ -3,7 +3,7 @@ import os
 import re
 from data.glossary import GLOSARIO
 
-def validar_mensaje(texto):
+def validate_message(texto):
     errores = []
 
     # WIP

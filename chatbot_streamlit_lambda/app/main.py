@@ -8,13 +8,50 @@ import uuid
 from core.supervisor_agent import run_supervisor
 from core.ticketing_agente import run_ticketing
 from services.query_kb import consultar_kb_streaming
-from app.utils.validators import validar_mensaje
+from app.utils.validators import validate_message
 
 st.title("🤖 Chatbot soporte Autoline con IA")
 
 # ----------------------
 # Funciones auxiliares
 # ----------------------
+
+from core.robot_agent import run_robot  # Asegúrate de tener esta importación
+
+from core.robot_agent import run_robot  # Asegúrate de tener esta importación
+
+def handle_robot(decision):
+    """
+    Procesa una acción 'invoke_robot' devuelta por el supervisor.
+    Extrae el código de usuario y el tipo de tarea del robot, 
+    y ejecuta la acción correspondiente.
+    """
+    user_code = decision.get("userCode", "")
+    robot_task = decision.get("robotTask", {})
+    task_type = robot_task.get("type", "")
+
+
+    if not user_code or not task_type:
+        show_answer("No se pudo identificar el código de usuario o el tipo de tarea del robot.")
+        return
+
+    prompt = f"Quiero ejecutar la acción '{task_type}', mi código de usuario es {user_code}"
+    session_id = st.session_state["session_id"]
+    # Ejecutar el robot
+    with st.chat_message("assistant"):
+        response_placeholder = st.empty()
+        full_response = ""
+        with st.spinner(f"Ejecutando robot..."):
+            try:
+                for chunk in run_robot(prompt, session_id):
+                    full_response += chunk
+                    response_placeholder.markdown(full_response)
+            except Exception as e:
+                response_placeholder.markdown(f"Error al ejecutar el robot: {e}")
+                return
+
+    st.session_state["messages"].append({"role": "assistant", "content": full_response})
+
 
 def generar_contexto_kb(max_ultimos=5):
     """
@@ -41,9 +78,11 @@ def inicializar_sesion():
         st.session_state["modo_ticket"] = False
     if "ticket_iniciado" not in st.session_state:
         st.session_state["ticket_iniciado"] = False
+    if "modo_robot" not in st.session_state:
+        st.session_state["modo_robot"] = False
 
 
-def mostrar_respuesta(texto):
+def show_answer(texto):
     """Muestra una respuesta del asistente y la guarda en el historial"""
     with st.chat_message("assistant"):
         st.markdown(texto)
@@ -79,7 +118,7 @@ def generar_resumen_contexto():
     return resumen
 
 
-def manejar_ticket(user_input):
+def handle_ticket(user_input):
     """Procesa un mensaje cuando estamos en modo ticket"""
     # Solo en la primera llamada al ticket
     if "ticket_iniciado" not in st.session_state or not st.session_state["ticket_iniciado"]:
@@ -145,16 +184,21 @@ def manejar_accion(decision, user_input):
 
         # Si llegamos aquí, fue porque hubo un "break" → se detectó "create"
         st.session_state["modo_ticket"] = True
-        manejar_ticket(user_input)  # Esto crea su propio st.chat_message, limpio
+        handle_ticket(user_input)  # Esto crea su propio st.chat_message, limpio
         return
 
     elif accion in ("create_ticket", "query_tickets"):
         st.session_state["modo_ticket"] = True
-        manejar_ticket(user_input)
+        handle_ticket(user_input)
+    
+    elif accion == "invoke_robot":
+        st.session_state["modo_robot"] = True
+        handle_robot(decision)
+        
         
     else:
         full_response = decision.get("userResponse", "")
-        mostrar_respuesta(full_response)
+        show_answer(full_response)
 
     st.session_state["ultimo_estado"] = f"Estado: {decision.get('status', '')}, Paso siguiente: {decision.get('nextStep', '')}"
 
@@ -170,15 +214,15 @@ def procesar_mensaje(user_input):
         st.markdown(user_input)
 
     # Validar mensaje
-    errores = validar_mensaje(user_input)
+    errores = validate_message(user_input)
     if errores:
         mensaje_errores = "Se encontraron los siguientes errores:\n\n" + "\n".join(f"- {e}" for e in errores)
-        mostrar_respuesta(mensaje_errores)
+        show_answer(mensaje_errores)
         return
 
     # Si estamos en modo ticket
     if st.session_state["modo_ticket"]:
-        manejar_ticket(user_input)
+        handle_ticket(user_input)
         return
 
     # Caso general: pedir decisión al supervisor
