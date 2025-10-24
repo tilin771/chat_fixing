@@ -65,12 +65,18 @@ def handle_robot(user_input_or_decision):
 
     st.session_state["messages"].append({"role": "assistant", "content": full_response})
 
-    if "El robot ha sido ejecutado" in full_response:
+    # Lista de palabras clave que indican que se debe reiniciar
+    keywords_reinicio = ["lo siento", "por favor", "contacta con soporte"]
+
+    # Convertimos el mensaje a minúsculas para hacer la búsqueda más flexible
+    full_response_lower = full_response.lower()
+
+    # Si alguna palabra clave aparece en el mensaje, reiniciamos las flags
+    if any(keyword in full_response_lower for keyword in keywords_reinicio):
         st.session_state["modo_robot"] = False
         st.session_state.pop("robot_inicializado", None)
         st.session_state.pop("robot_user_code", None)
         st.session_state.pop("robot_task_type", None)
-
 
 
 def generar_contexto_kb(max_ultimos=5):
