@@ -198,15 +198,13 @@ def handle_action(decision, user_input):
                     full_response += partial_response
                     response_placeholder.markdown(full_response)
                 else:
-                    # Este else se ejecuta SOLO si el bucle terminó normalmente (sin break)
                     full_response += f"\n\n**{decision.get('confirmationMessage', '')}**"
                     response_placeholder.markdown(full_response)
                     st.session_state["messages"].append({"role": "assistant", "content": full_response})
-                    return  # Fin normal
+                    return  
 
-        # Si llegamos aquí, fue porque hubo un "break" → se detectó "create"
         st.session_state["modo_ticket"] = True
-        handle_ticket(user_input)  # Esto crea su propio st.chat_message, limpio
+        handle_ticket(user_input) 
         return
 
     elif accion in ("create_ticket", "query_tickets"):
