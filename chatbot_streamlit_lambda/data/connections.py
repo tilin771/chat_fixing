@@ -18,5 +18,5 @@ AGENT_ARN_TICKET = "arn:aws:bedrock:us-east-1:699541216231:agent/IV0UXLYYQZ"
 AGENT_ALIAS_ARN_TICKET = "arn:aws:bedrock:us-east-1:699541216231:agent-alias/L1DFRWB9AN"
 
 AGENT_ARN_ROBOT = "arn:aws:bedrock:us-east-1:699541216231:agent/3XOGAAC9MU"
-AGENT_ALIAS_ARN_ROBOT = "arn:aws:bedrock:us-east-1:699541216231:agent-alias/EUP1DTQDLZ"
+AGENT_ALIAS_ARN_ROBOT = "arn:aws:bedrock:us-east-1:699541216231:agent-alias/DBMP074WTY"
 
